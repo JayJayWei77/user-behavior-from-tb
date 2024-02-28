@@ -54,3 +54,22 @@ SELECT
   COUNT(DISTINCT user_id) OVER w AS uv
 FROM user_behavior
 WINDOW w AS (ORDER BY proctime ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW);
+INSERT INTO cumulative_uv
+SELECT time_str, MAX(uv)
+FROM uv_per_10min
+GROUP BY time_str;
+
+-- 创建商品类目维表
+CREATE TABLE category_dim (
+    sub_category_id BIGINT,
+    parent_category_name STRING
+) WITH (
+    'connector.type' = 'jdbc',
+    'connector.url' = 'jdbc:mysql://172.16.122.25:3306/flink',
+    'connector.table' = 'category',
+    'connector.driver' = 'com.mysql.jdbc.Driver',
+    'connector.username' = 'root',
+    'connector.password' = 'root',
+    'connector.lookup.cache.max-rows' = '5000',
+    'connector.lookup.cache.ttl' = '10min'
+);
