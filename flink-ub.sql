@@ -73,3 +73,17 @@ CREATE TABLE category_dim (
     'connector.lookup.cache.max-rows' = '5000',
     'connector.lookup.cache.ttl' = '10min'
 );
+
+-- 存放商品类目排行表
+CREATE TABLE top_category  (
+    category_name  STRING,
+    buy_cnt  BIGINT
+) WITH (
+    'connector.type' = 'elasticsearch',
+    'connector.version' = '7',
+    'connector.hosts' = 'http://172.16.122.13:9200',
+    'connector.index' = 'top_category',
+    'connector.document-type' = 'user_behavior',
+    'update-mode' = 'upsert',
+    'format.type' = 'json'
+);
