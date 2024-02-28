@@ -48,3 +48,9 @@ CREATE TABLE cumulative_uv (
     'update-mode' = 'upsert',
     'format.type' = 'json'
 );
+CREATE VIEW uv_per_10min AS
+SELECT
+  MAX(SUBSTR(DATE_FORMAT(ts, 'HH:mm'),1,4) || '0') OVER w AS time_str,
+  COUNT(DISTINCT user_id) OVER w AS uv
+FROM user_behavior
+WINDOW w AS (ORDER BY proctime ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW);
